@@ -1,25 +1,90 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Form from './Components/Form';
+import Clock from './Components/Clock';
+import Post from './Components/Posts';
+import WarningBanner from './Components/WarningBanner';
+import Button from './Components/Button';
+import FancyBorder from './Components/FancyBorder';
+
+export default class App extends Component {
+
+  constructor(props){
+    super(props);
+    this.state = { 
+      date: new Date(),
+      posts: [1,2,3,4,5,6,7,8,9],
+      isLoggedIn: false,
+      user: {
+        name:'',
+        password:''
+      },
+    }
+
+    this.handleClick = this.handleClick.bind(this); 
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  
+  tick() {
+    this.setState({
+      date: new Date()
+    })
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval( () => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID)
+  }
+
+  handleClick(e) {
+    e.preventDefault();
+    alert(JSON.stringify(this.state));
+  }
+
+  handleLogin() {
+    this.setState({isLoggedIn: !this.state.isLoggedIn});
+  }
+
+  handleChange(e) {
+    const { name, value } = e.target
+    this.setState( prevState => ({
+      ...prevState,
+      user: {
+        ...prevState.user,
+        [name]: value
+      }
+    }))
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    console.log(this.state)
+  }
+
+  render() {
+    return (
+      <>
+        <FancyBorder>
+          <Clock dateInfo={this.state.date} />
+          <Button nameTag="Alert" handlerFunction={this.handleClick}/>
+          {this.state.posts && <Post posts={this.state.posts}/>}
+          <Button 
+            nameTag={this.state.isLoggedIn ? "Sign out" : "Login"} 
+            handlerFunction={this.handleLogin}
+            />
+          <WarningBanner isLoggedIn={this.state.isLoggedIn}/>
+          <Form 
+            handleSubmit={this.handleSubmit}
+            handleChange={this.handleChange}
+            value={this.state.user}  
+          />
+        </FancyBorder>
+      </>
+    )
+  }
 }
-
-export default App;
